@@ -1,8 +1,8 @@
 class Epubfix < Formula
   desc "A CLI tool to fix and repair EPUB files"
   homepage "https://github.com/tohnk/epubfix"
-  url "https://github.com/tohnk/epubfix/archive/refs/tags/v0.1.6.tar.gz"
-  sha256 "b6246253ae014c60872fb69e3f84ed088857b256e51d96c07ccd206d3e241e03"
+  url "https://github.com/tohnk/epubfix/archive/refs/tags/v0.1.7.tar.gz"
+  sha256 "b0e28a18e6968c501f3466a43544641dcb80ea6120de63cb37517359e433a007"
   license "MIT" # Update if your repo uses a different license (e.g. "Apache-2.0")
 
   depends_on "rust" => :build
