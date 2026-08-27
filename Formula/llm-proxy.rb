@@ -1,8 +1,8 @@
 class LlmProxy < Formula
   desc "SSE-resumable LLM API proxy"
   homepage "https://github.com/tohnk/llm-proxy"
-  url "https://github.com/tohnk/llm-proxy/archive/refs/tags/v0.1.3.tar.gz"
-  sha256 "de165c714b5e6394119f5b49d2bf626ade1fe6fb6b7664ffff5b507a8504539b"
+  url "https://github.com/tohnk/llm-proxy/archive/refs/tags/v0.1.4.tar.gz"
+  sha256 "0a998f991d53c3ad6b497a2fd8d52fa79bec58feea51db90ae6e21606720a478"
   license "MIT" # match whatever license llm-proxy actually uses
   depends_on "rust" => :build
 
