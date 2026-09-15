@@ -1,3 +1,5 @@
+require "etc"
+
 class Epubfix < Formula
   desc "A CLI tool to fix and repair EPUB files"
   homepage "https://github.com/tohnk/epubfix"
@@ -5,20 +7,37 @@ class Epubfix < Formula
   sha256 "4e016b5fed445f1b1c3a53daa4b380a2e55a89fcd235164e9c28f5047728c384"
   license "MIT"
 
-  # 1. Removed depends_on "rust" => :build
+  # Intentionally use the user's existing rustup installation.
+  # No depends_on "rust" => :build
 
   def install
-    # 2. Inject your user's cargo path into superenv's PATH
-    cargo_bin = "#{ENV["HOME"]}/.cargo/bin"
-    ENV.prepend_path "PATH", cargo_bin
+    # Get the account's real home, not Homebrew's temporary HOME.
+    real_home = Etc.getpwuid(Process.uid).dir
+    cargo_bin = "#{real_home}/.cargo/bin"
+    cargo = "#{cargo_bin}/cargo"
 
-    # 3. Verify cargo is available before proceeding
-    unless quiet_system "#{cargo_bin}/cargo", "--version"
-      odie "Cargo not found in #{cargo_bin}. Please install rustup first."
+    unless File.executable?(cargo)
+      odie "Expected rustup's Cargo at #{cargo}, but it is missing or not executable."
     end
 
-    # 4. Execute cargo install using your system rustup toolchain
-    system "cargo", "install", *std_cargo_args
+    # Tell rustup where the already-installed toolchains live.
+    ENV["RUSTUP_HOME"] = "#{real_home}/.rustup"
+
+    # Keep Cargo's downloads, cache and lock files inside the sandbox.
+    ENV["CARGO_HOME"] = (buildpath/"cargo-home").to_s
+
+    # Make Rust tools available to Cargo and dependency build scripts.
+    ENV.prepend_path "PATH", cargo_bin
+
+    # Explicitly select rustup's compiler as well as its Cargo.
+    ENV["RUSTC"] = "#{cargo_bin}/rustc"
+
+    # Show actual errors rather than hiding them behind "Cargo not found".
+    system cargo, "--version"
+    system "#{cargo_bin}/rustc", "--version"
+
+    # Install into Homebrew's prefix using the existing Rust toolchain.
+    system cargo, "install", *std_cargo_args
   end
 
   test do
