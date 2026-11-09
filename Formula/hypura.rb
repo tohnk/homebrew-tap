@@ -8,9 +8,11 @@ class Hypura < Formula
       tag:      "v0.2.0",
       revision: "7fb2479a070842a0d304ccde0a9f229d151e7569"
   license "MIT"
+  revision 1
 
   depends_on "cmake" => :build
-  depends_on "llvm" => :build
+  # bindgen 0.71.1 requires libclang older than 22.
+  depends_on "llvm@21" => :build
   depends_on :macos
   depends_on arch: :arm64
 
@@ -31,9 +33,9 @@ class Hypura < Formula
     ENV.prepend_path "PATH", cargo_bin
     ENV["RUSTC"] = rustc
 
-    # bindgen needs libclang to generate the llama.cpp bindings.
-    ENV["LIBCLANG_PATH"] = Formula["llvm"].opt_lib.to_s
-    ENV["CLANG_PATH"] = (Formula["llvm"].opt_bin/"clang").to_s
+    # Use LLVM 21 for bindgen; keep Cargo and rustc from rustup.
+    ENV["LIBCLANG_PATH"] = Formula["llvm@21"].opt_lib.to_s
+    ENV["CLANG_PATH"] = (Formula["llvm@21"].opt_bin/"clang").to_s
 
     # Backport upstream's macOS build fix, which followed v0.2.0.
     # Build the llama.cpp libraries without its standalone tools or OpenSSL.
